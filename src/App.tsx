@@ -1,93 +1,112 @@
 import { useEffect, useState } from "react";
-import "./App.css";
-import axios from "axios";
 
-import { GraphCanvas, GraphEdge, GraphNode } from "reagraph";
-
-interface Foo {
-  [key: string]: string;
-}
-
-interface PackageJson {
-  name: string;
-  version: string;
-  dependencies?: Foo;
-  description: string;
-  license: string;
-}
-
-interface GraphStruct {
-  nodes: GraphNode[];
-  edges: GraphEdge[];
-}
-
-export interface Package {
-  name: string;
-  version: string;
-  dependencies?: Package[];
-  description: string;
-  license: string;
-}
+import { darkTheme, GraphCanvas, GraphEdge, GraphNode } from "reagraph";
+import {
+  GraphStruct,
+  distinctByKey,
+  getDeps,
+  getDepsFromJson,
+  getGraphStructure,
+  loadMore,
+} from "./utils";
+import { Dropzone, ExtFile } from "@files-ui/react";
+import { Version } from "./types";
+import Button from "@mui/material/Button";
+import { Box, Grid, Grid2, Typography } from "@mui/material";
+import { Pageview } from "@mui/icons-material";
 
 function App() {
   const [data, setData] = useState<GraphStruct | undefined>(undefined);
-
-  const getData = async (name: string, version?: string) => {
-    const url = `https://registry.npmjs.org/${name}/${version ?? "latest"}`;
-    console.log(url);
-    const { data } = await axios.get<PackageJson>(url);
-    return data;
-  };
-
-  const formatVersion = (version: string) => {
-    const str = RegExp(/\d+.\d+.\d+/).exec(version);
-    const number = RegExp(/\d+/).exec(version)?.[0];
-    const numberStr = number ? `${number}.0.0` : undefined;
-    return str?.[0] ?? numberStr ?? "latest";
-  };
-
-  const getDeps = async (name: string, version?: string): Promise<Package> => {
-    const raw = await getData(name, version);
-    const pack: Package = { ...raw, dependencies: [] };
-    if (raw.dependencies) {
-      const promises = Object.entries(raw.dependencies).map(
-        async (e) => await getDeps(e[0], formatVersion(e[1]))
-      );
-
-      pack.dependencies = await Promise.all(promises);
-    }
-
-    return pack;
-  };
-
-  const convert = (pack: Package): GraphStruct => {
-    const current = toNode(pack);
-    const children = pack.dependencies?.map((p) => toNode(p)) ?? [];
-    const edges = children.map((c) => toEdge(current, c));
-    const graphs = pack.dependencies?.map(convert);
-    return {
-      nodes: [current, ...(graphs?.flatMap((g) => g.nodes) ?? [])],
-      edges: [...edges, ...(graphs?.flatMap((g) => g.edges) ?? [])],
-    };
-  };
-
-  const toNode = (pack: Package): GraphNode => {
-    const id = `${pack.name}@${pack.version}`;
-    return { id, label: id };
-  };
-  const toEdge = (source: GraphNode, target: GraphNode): GraphEdge => {
-    const id = `${source.id}->${target.id}`;
-    return { id, label: id, source: source.id, target: target.id };
-  };
+  const [files, setFiles] = useState<ExtFile[]>([]);
 
   useEffect(() => {
-    getDeps("reagraph").then((d) => {
-      const graph = convert(d);
-      setData(graph);
+    const file = files[0];
+    if (!file) return;
+    getDepsFromJson(file).then(() => {
+      const d = getGraphStructure();
+      console.log("data", d);
+      setData(d);
     });
-  }, []);
+  }, [files]);
 
-  return <GraphCanvas nodes={data?.nodes ?? []} edges={data?.edges ?? []} />;
+  useEffect(() => {
+    //loadMore();
+  }, [data]);
+
+  const handleMore = async () => {
+    await loadMore();
+    setData(getGraphStructure());
+  };
+
+  return (
+    <Box>
+      {data && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "70%",
+              height: "100%",
+              //backgroundColor: "blue",
+            }}
+          >
+            <GraphCanvas
+              layoutType="treeTd2d"
+              sizingType="default"
+              //collapsedNodeIds={data?.nodes.map((n) => n.id)}
+              draggable
+              nodes={data?.nodes ?? []}
+              edges={data?.edges ?? []}
+              selections={["glodrei@0.0.1"]}
+              //clusterAttribute="licence"
+              //theme={darkTheme}
+              labelType="all"
+              lassoType="node"
+              layoutOverrides={{ nodeLevelRatio: 5 }}
+              onNodeClick={(node) => {
+                //window.alert(node.data.name);
+              }}
+            />
+          </div>
+
+          <div
+            style={{
+              position: "fixed",
+              width: "30%",
+              top: 0,
+              right: 0,
+              borderLeft: "solid",
+              height: "100%",
+              padding: 8,
+            }}
+          >
+            <Button variant="contained" onClick={handleMore}>
+              More
+            </Button>
+            <Typography>
+              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+              nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
+              erat, sed diam voluptua. At vero eos et accusam et justo duo
+              dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
+              sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
+              amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+              invidunt ut labore et dolore magna aliquyam erat, sed diam
+              voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+              Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
+              dolor sit amet.
+            </Typography>
+          </div>
+        </>
+      )}
+      {!data && (
+        <Box width={200} height={200}>
+          <Dropzone value={files} onChange={(newFiles) => setFiles(newFiles)} />{" "}
+        </Box>
+      )}
+    </Box>
+  );
 }
 
 export default App;
