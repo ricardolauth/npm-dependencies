@@ -6,10 +6,12 @@ import {
   Button,
   Link,
   Typography,
+  AvatarGroup,
 } from "@mui/material";
 import { Package } from "./types";
 import MuiMarkdown from "mui-markdown";
 import { format } from "date-fns";
+import { Maintainer } from "./Maintainer";
 
 interface CustomDialogProps {
   open: boolean;
@@ -64,12 +66,16 @@ const InfoDialog: React.FC<CustomDialogProps> = ({ open, onClose, data }) => {
           <span style={{ fontWeight: "bold", marginRight: "5px" }}>
             Maintainer:{" "}
           </span>
-          {data.maintainers.map((maintainer, index) => (
-            <span key={index}>
-              {maintainer.name}
-              {index < data.maintainers.length - 1 && ", "}
-            </span>
-          ))}
+
+          <AvatarGroup max={4}>
+            {data.maintainers.map((maintainer, index) => (
+              // <span key={index}>
+              //   {maintainer.name}
+              //   {index < data.maintainers.length - 1 && ", "}
+              // </span>
+              <Maintainer key={maintainer.email} name={maintainer.name} />
+            ))}
+          </AvatarGroup>
           <p style={{ marginRight: "5px" }}>
             <strong>Readme:</strong>
             <MuiMarkdown>{data.readme}</MuiMarkdown>
