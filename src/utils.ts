@@ -28,11 +28,11 @@ export interface GraphStruct {
 //   license: string;
 // }
 
-const cache = new Map<string, Package>();
+export const cache = new Map<string, Package>();
 const nodes = new Set<GraphNode>();
 const edges = new Set<GraphEdge>();
 
-const getData = async (name: string) => {
+export const getData = async (name: string) => {
   const entry = cache.get(name);
   if (entry) {
     return entry;
@@ -71,8 +71,9 @@ export const getGraphStructure = (): GraphStruct => {
 };
 
 export const getDeps = async (source: Version) => {
-  if (!source.dependencies) {
-    const pack = await getData(source.name);
+  // TODO kurzer Fix für Präsi, damit wird dann nicht die dependency von nem random "dependencies"-projekt in npm displayed
+  if (source.name !== "dependencies") {
+    const pack = await getData(source.name);  
     const packVersionDeps =
       pack.versions[source.version ?? pack["dist-tags"].latest] ??
       pack.versions[pack["dist-tags"].latest];
@@ -104,6 +105,7 @@ export const loadMore = async () => {
     }
   }
 
+  console.log("more")
   console.log(more);
   await Promise.all(more);
 

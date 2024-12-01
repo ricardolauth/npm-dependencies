@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
 
-import { darkTheme, GraphCanvas, GraphEdge, GraphNode } from "reagraph";
+import {  GraphCanvas, InternalGraphNode } from "reagraph";
 import {
   GraphStruct,
-  distinctByKey,
-  getDeps,
+  getData,
   getDepsFromJson,
   getGraphStructure,
   loadMore,
 } from "./utils";
 import { Dropzone, ExtFile } from "@files-ui/react";
-import { Version } from "./types";
 import Button from "@mui/material/Button";
-import { Box, Grid, Grid2, Typography } from "@mui/material";
-import { Pageview } from "@mui/icons-material";
+import { Box, Typography } from "@mui/material";
+import InfoDialog from "./InfoDialog";
 
 function App() {
   const [data, setData] = useState<GraphStruct | undefined>(undefined);
   const [files, setFiles] = useState<ExtFile[]>([]);
+  const [infoDialogOpen, setInfoDialogOpen] = useState<boolean>(false); 
+  const [currentSelectedNode, setCurrentSelectedNode] = useState<InternalGraphNode>();
+
+  // TODO ich hatte keinen Bock auf unendliche Fehlermeldungen in der Konsole, sollte man prob noch besser machen
+  let keyCounter = 0;
 
   useEffect(() => {
     const file = files[0];
@@ -49,27 +52,32 @@ function App() {
               left: 0,
               width: "70%",
               height: "100%",
-              //backgroundColor: "blue",
             }}
           >
             <GraphCanvas
+              key ={keyCounter++} 
               layoutType="treeTd2d"
               sizingType="default"
-              //collapsedNodeIds={data?.nodes.map((n) => n.id)}
-              draggable
+              //draggable
               nodes={data?.nodes ?? []}
               edges={data?.edges ?? []}
-              selections={["glodrei@0.0.1"]}
-              //clusterAttribute="licence"
-              //theme={darkTheme}
               labelType="all"
               lassoType="node"
-              layoutOverrides={{ nodeLevelRatio: 5 }}
-              onNodeClick={(node) => {
-                //window.alert(node.data.name);
+              layoutOverrides={{ nodeLevelRatio: 5, nodeSeparation: 2 }}
+              onNodeClick={async (node) => {
+                await getData(node.data.name)
+                setCurrentSelectedNode(node);
+                setInfoDialogOpen(true);
               }}
             />
           </div>
+
+          // Keine Ahnung ob das currentSelectedNodel! passt aber eig. sollte es gehen. Dialog ist ja nur offen, wenn die Node selected wird
+          <InfoDialog 
+            open={infoDialogOpen} 
+            onClose={() => setInfoDialogOpen(false)} 
+            node={currentSelectedNode!}
+          />
 
           <div
             style={{
