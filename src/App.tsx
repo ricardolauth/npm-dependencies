@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import {  GraphCanvas, InternalGraphNode } from "reagraph";
+import { GraphCanvas, InternalGraphNode } from "reagraph";
 import {
   GraphStruct,
   getData,
@@ -12,12 +12,12 @@ import { Dropzone, ExtFile } from "@files-ui/react";
 import Button from "@mui/material/Button";
 import { Box, Typography } from "@mui/material";
 import InfoDialog from "./InfoDialog";
+import { Package } from "./types";
 
 function App() {
   const [data, setData] = useState<GraphStruct | undefined>(undefined);
   const [files, setFiles] = useState<ExtFile[]>([]);
-  const [infoDialogOpen, setInfoDialogOpen] = useState<boolean>(false); 
-  const [currentSelectedNode, setCurrentSelectedNode] = useState<InternalGraphNode>();
+  const [selectedPackage, setSelectedPackage] = useState<Package>();
 
   // TODO ich hatte keinen Bock auf unendliche Fehlermeldungen in der Konsole, sollte man prob noch besser machen
   let keyCounter = 0;
@@ -55,29 +55,21 @@ function App() {
             }}
           >
             <GraphCanvas
-              key ={keyCounter++} 
-              layoutType="treeTd2d"
+              key={keyCounter++}
+              // layoutType="treeTd2d"
               sizingType="default"
-              //draggable
+              draggable
               nodes={data?.nodes ?? []}
               edges={data?.edges ?? []}
               labelType="all"
               lassoType="node"
               layoutOverrides={{ nodeLevelRatio: 5, nodeSeparation: 2 }}
               onNodeClick={async (node) => {
-                await getData(node.data.name)
-                setCurrentSelectedNode(node);
-                setInfoDialogOpen(true);
+                const data = await getData(node.data.name);
+                setSelectedPackage(data);
               }}
             />
           </div>
-
-          // Keine Ahnung ob das currentSelectedNodel! passt aber eig. sollte es gehen. Dialog ist ja nur offen, wenn die Node selected wird
-          <InfoDialog 
-            open={infoDialogOpen} 
-            onClose={() => setInfoDialogOpen(false)} 
-            node={currentSelectedNode!}
-          />
 
           <div
             style={{
@@ -112,6 +104,13 @@ function App() {
         <Box width={200} height={200}>
           <Dropzone value={files} onChange={(newFiles) => setFiles(newFiles)} />{" "}
         </Box>
+      )}
+      {selectedPackage && (
+        <InfoDialog
+          open={!!selectedPackage}
+          onClose={() => setSelectedPackage(undefined)}
+          data={selectedPackage}
+        />
       )}
     </Box>
   );
