@@ -20,9 +20,14 @@ export const Maintainer = ({ name }: Props) => {
     };
     load();
   }, []);
+
   return (
     <Tooltip title={name}>
-      <Avatar alt={name} src={user?.avatar_url}></Avatar>
+      <Avatar
+        alt={name}
+        src={user?.avatar_url}
+        onClick={() => window.open(user?.html_url, "_blank")}
+      ></Avatar>
     </Tooltip>
   );
 };

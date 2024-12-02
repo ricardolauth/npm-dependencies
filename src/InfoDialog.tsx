@@ -7,6 +7,7 @@ import {
   Link,
   Typography,
   AvatarGroup,
+  Stack,
 } from "@mui/material";
 import { Package } from "./types";
 import MuiMarkdown from "mui-markdown";
@@ -66,16 +67,18 @@ const InfoDialog: React.FC<CustomDialogProps> = ({ open, onClose, data }) => {
           <span style={{ fontWeight: "bold", marginRight: "5px" }}>
             Maintainer:{" "}
           </span>
+          <Stack width="100%" alignItems="flex-start">
+            <AvatarGroup max={10}>
+              {data.maintainers.map((maintainer, index) => (
+                // <span key={index}>
+                //   {maintainer.name}
+                //   {index < data.maintainers.length - 1 && ", "}
+                // </span>
+                <Maintainer key={maintainer.email} name={maintainer.name} />
+              ))}
+            </AvatarGroup>
+          </Stack>
 
-          <AvatarGroup max={4}>
-            {data.maintainers.map((maintainer, index) => (
-              // <span key={index}>
-              //   {maintainer.name}
-              //   {index < data.maintainers.length - 1 && ", "}
-              // </span>
-              <Maintainer key={maintainer.email} name={maintainer.name} />
-            ))}
-          </AvatarGroup>
           <p style={{ marginRight: "5px" }}>
             <strong>Readme:</strong>
             <MuiMarkdown>{data.readme}</MuiMarkdown>

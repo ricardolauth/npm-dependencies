@@ -107,7 +107,10 @@ function App() {
       )}
       {selectedPackage && (
         <InfoDialog
-          open={!!selectedPackage}
+          open={
+            !!selectedPackage &&
+            selectedPackage.name !== data?.nodes[0].data.name
+          }
           onClose={() => setSelectedPackage(undefined)}
           data={selectedPackage}
         />
