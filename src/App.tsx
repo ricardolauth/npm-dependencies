@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 import { GraphCanvas, InternalGraphNode } from "reagraph";
 import {
@@ -32,9 +32,17 @@ function App() {
     });
   }, [files]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const load = async () => {
+      let i = 0;
+      while (i < 3) {
+        await loadMore();
+      }
+      setData(getGraphStructure());
+    };
+    load();
     //loadMore();
-  }, [data]);
+  }, []);
 
   const handleMore = async () => {
     await loadMore();

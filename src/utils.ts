@@ -41,7 +41,7 @@ export const getData = async (name: string) => {
   const url = `https://registry.npmjs.org/${name}`;
   console.log("get from registry", name);
   const { data } = await axios.get<Package>(url);
-  cache.set(data.name, data);
+  cache.set(name, data);
   return data;
 };
 
@@ -73,7 +73,7 @@ export const getGraphStructure = (): GraphStruct => {
 export const getDeps = async (source: Version) => {
   // TODO kurzer Fix für Präsi, damit wird dann nicht die dependency von nem random "dependencies"-projekt in npm displayed
   if (source.name !== "dependencies") {
-    const pack = await getData(source.name);  
+    const pack = await getData(source.name);
     const packVersionDeps =
       pack.versions[source.version ?? pack["dist-tags"].latest] ??
       pack.versions[pack["dist-tags"].latest];
@@ -105,7 +105,7 @@ export const loadMore = async () => {
     }
   }
 
-  console.log("more")
+  console.log("more");
   console.log(more);
   await Promise.all(more);
 
