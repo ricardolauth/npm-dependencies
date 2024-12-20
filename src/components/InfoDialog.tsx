@@ -8,7 +8,7 @@ import {
   AvatarGroup,
   Stack,
 } from "@mui/material";
-import { Package } from "./types";
+import { Metadata, Package } from "../types";
 import MuiMarkdown from "mui-markdown";
 import { format } from "date-fns";
 import { Maintainer } from "./Maintainer";
@@ -16,7 +16,7 @@ import { Maintainer } from "./Maintainer";
 interface CustomDialogProps {
   open: boolean;
   onClose: () => void;
-  data: Package;
+  data: Metadata;
 }
 
 const InfoDialog: React.FC<CustomDialogProps> = ({ open, onClose, data }) => {
@@ -44,10 +44,10 @@ const InfoDialog: React.FC<CustomDialogProps> = ({ open, onClose, data }) => {
             {data["dist-tags"].latest}
           </p>
 
-          <p style={{ marginRight: "5px" }}>
+          {/* <p style={{ marginRight: "5px" }}>
             <strong>Last Updated:</strong>
             {format(new Date(data.time.modified), "dd.MM.yyyy")}
-          </p>
+          </p> */}
           <p style={{ marginRight: "5px" }}>
             <strong>Homepage:</strong>{" "}
             <Link target="_blank" href={data.homepage}>
@@ -58,9 +58,12 @@ const InfoDialog: React.FC<CustomDialogProps> = ({ open, onClose, data }) => {
             <strong>Repository:</strong>{" "}
             <Link
               target="_blank"
-              href={data.repository.url.replace(data.repository.type + "+", "")}
+              href={data.repository?.url.replace(
+                data.repository.type + "+",
+                ""
+              )}
             >
-              {data.repository.url.replace(data.repository.type + "+", "")}
+              {data.repository?.url.replace(data.repository.type + "+", "")}
             </Link>
           </p>
           <span style={{ fontWeight: "bold", marginRight: "5px" }}>
@@ -68,16 +71,16 @@ const InfoDialog: React.FC<CustomDialogProps> = ({ open, onClose, data }) => {
           </span>
           <Stack width="100%" alignItems="flex-start">
             <AvatarGroup max={10}>
-              {data.maintainers.map((maintainer) => (
+              {data.maintainers?.map((maintainer) => (
                 <Maintainer key={maintainer.email} name={maintainer.name} />
               ))}
             </AvatarGroup>
           </Stack>
 
-          <p style={{ marginRight: "5px" }}>
+          {/* <p style={{ marginRight: "5px" }}>
             <strong>Readme:</strong>
             <MuiMarkdown>{data.readme}</MuiMarkdown>
-          </p>
+          </p> */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

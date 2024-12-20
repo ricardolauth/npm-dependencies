@@ -3,7 +3,7 @@ import { Metadata, Version } from "./types";
 import axios from "axios";
 
 interface Result {
-  tree: object;
+  tree: Record<string, object>;
   flat: Metadata[];
   cycles: string[][];
 }

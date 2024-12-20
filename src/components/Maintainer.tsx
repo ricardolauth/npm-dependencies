@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GitHubUser } from "./types";
+import { GitHubUser } from "../types";
 import { useEffect, useState } from "react";
 import { Avatar, Tooltip } from "@mui/material";
 
@@ -7,8 +7,16 @@ interface Props {
   name: string;
 }
 
-const getData = (name: string) => {
-  return axios.get<GitHubUser>(`https://api.github.com/users/${name}`);
+const cache = new Map<string, GitHubUser>();
+const getData = async (name: string) => {
+  const d = cache.get(name);
+  if (d) return d;
+
+  const loaded = await axios.get<GitHubUser>(
+    `https://api.github.com/users/${name}`
+  );
+  cache.set(name, loaded.data);
+  return loaded.data;
 };
 
 export const Maintainer = ({ name }: Props) => {
@@ -16,7 +24,7 @@ export const Maintainer = ({ name }: Props) => {
   useEffect(() => {
     const load = async () => {
       const user = await getData(name);
-      setUser(user.data);
+      setUser(user);
     };
     load();
   }, []);
