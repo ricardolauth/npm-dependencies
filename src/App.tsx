@@ -1,57 +1,63 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { GraphCanvas, InternalGraphNode } from "reagraph";
-import {
-  GraphStruct,
-  getData,
-  getDepsFromJson,
-  getGraphStructure,
-  loadMore,
-} from "./utils";
+import { GraphCanvas } from "reagraph";
+import { GraphStruct, convert } from "./utils";
 import { Dropzone, ExtFile } from "@files-ui/react";
-import Button from "@mui/material/Button";
 import { Box, Typography } from "@mui/material";
 import InfoDialog from "./InfoDialog";
-import { Package } from "./types";
+import { Metadata, Package } from "./types";
+import { getFileDeps } from "./api";
+
+interface GraphInfo {
+  cycles: string[][];
+}
 
 function App() {
-  const [data, setData] = useState<GraphStruct | undefined>(undefined);
+  const [graph, setGraph] = useState<GraphStruct | undefined>(undefined);
+  const [packages, setPackages] = useState<Metadata[]>();
+  const [info, setInfo] = useState<GraphInfo>();
   const [files, setFiles] = useState<ExtFile[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<Package>();
 
-  // TODO ich hatte keinen Bock auf unendliche Fehlermeldungen in der Konsole, sollte man prob noch besser machen
-  let keyCounter = 0;
+  // // TODO ich hatte keinen Bock auf unendliche Fehlermeldungen in der Konsole, sollte man prob noch besser machen
+  // let keyCounter = 0;
 
   useEffect(() => {
-    const file = files[0];
-    if (!file) return;
-    getDepsFromJson(file).then(() => {
-      const d = getGraphStructure();
-      console.log("data", d);
-      setData(d);
-    });
-  }, [files]);
-
-  useLayoutEffect(() => {
     const load = async () => {
-      let i = 0;
-      while (i < 3) {
-        await loadMore();
-      }
-      setData(getGraphStructure());
+      const start = new Date();
+      const file = files[0];
+      if (!file) return;
+      const result = await getFileDeps(file);
+      if (!result) return;
+      setGraph(convert(result.tree));
+      setPackages(result.flat);
+      setInfo({ cycles: result.cycles });
+      const end = new Date();
+      console.log((end.getTime() - start.getTime()) / 1000, "sec");
     };
     load();
-    //loadMore();
-  }, []);
+  }, [files]);
 
-  const handleMore = async () => {
-    await loadMore();
-    setData(getGraphStructure());
-  };
+  // useEffect(() => {
+  //   const load = async () => {
+  //     let i = 0;
+  //     while (i < 3) {
+  //       await loadMore();
+  //     }
+  //     setData(getGraphStructure());
+  //   };
+  //   load();
+  //   loadMore();
+  // }, []);
+
+  // const handleMore = async () => {
+  //   await loadMore();
+  //   setData(getGraphStructure());
+  // };
 
   return (
     <Box>
-      {data && (
+      {graph && (
         <>
           <div
             style={{
@@ -63,18 +69,18 @@ function App() {
             }}
           >
             <GraphCanvas
-              key={keyCounter++}
-              // layoutType="treeTd2d"
+              key={"graph"}
+              layoutType="hierarchicalTd"
               sizingType="default"
               draggable
-              nodes={data?.nodes ?? []}
-              edges={data?.edges ?? []}
+              nodes={graph?.nodes ?? []}
+              edges={graph?.edges ?? []}
               labelType="all"
               lassoType="node"
-              layoutOverrides={{ nodeLevelRatio: 5, nodeSeparation: 2 }}
+              //layoutOverrides={{ nodeLevelRatio: 5, nodeSeparation: 2 }}
               onNodeClick={async (node) => {
-                const data = await getData(node.data.name);
-                setSelectedPackage(data);
+                // const data = await getData(node.data.name);
+                // setSelectedPackage(data);
               }}
             />
           </div>
@@ -90,9 +96,6 @@ function App() {
               padding: 8,
             }}
           >
-            <Button variant="contained" onClick={handleMore}>
-              More
-            </Button>
             <Typography>
               Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
               nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
@@ -108,7 +111,7 @@ function App() {
           </div>
         </>
       )}
-      {!data && (
+      {!graph && (
         <Box width={200} height={200}>
           <Dropzone value={files} onChange={(newFiles) => setFiles(newFiles)} />{" "}
         </Box>
@@ -117,7 +120,7 @@ function App() {
         <InfoDialog
           open={
             !!selectedPackage &&
-            selectedPackage.name !== data?.nodes[0].data.name
+            selectedPackage.name !== graph?.nodes[0].data.name
           }
           onClose={() => setSelectedPackage(undefined)}
           data={selectedPackage}

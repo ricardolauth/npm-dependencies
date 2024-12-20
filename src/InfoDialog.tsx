@@ -5,7 +5,6 @@ import {
   DialogTitle,
   Button,
   Link,
-  Typography,
   AvatarGroup,
   Stack,
 } from "@mui/material";
@@ -69,11 +68,7 @@ const InfoDialog: React.FC<CustomDialogProps> = ({ open, onClose, data }) => {
           </span>
           <Stack width="100%" alignItems="flex-start">
             <AvatarGroup max={10}>
-              {data.maintainers.map((maintainer, index) => (
-                // <span key={index}>
-                //   {maintainer.name}
-                //   {index < data.maintainers.length - 1 && ", "}
-                // </span>
+              {data.maintainers.map((maintainer) => (
                 <Maintainer key={maintainer.email} name={maintainer.name} />
               ))}
             </AvatarGroup>

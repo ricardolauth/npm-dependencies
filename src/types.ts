@@ -110,3 +110,18 @@ export interface GitHubUser {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface Metadata {
+  _id: string;
+  name: string;
+  version: string;
+  description: string;
+  maintainers?: Maintainer[];
+  repository: Repository;
+  keywords?: string[];
+  homepage?: string;
+  deprecated?: boolean | string;
+  license?: LicenseEnum;
+  "dist-tags": DistTags;
+  peerDependencies?: { [key: string]: string };
+}
