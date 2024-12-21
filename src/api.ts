@@ -1,5 +1,5 @@
 import { ExtFile } from "@files-ui/react";
-import { Metadata, Version } from "./types";
+import { Metadata, SearchObj, SearchQuery, Version } from "./types";
 import axios from "axios";
 
 interface Result {
@@ -9,7 +9,7 @@ interface Result {
 }
 
 export const getPackage = async (name: string, version?: string) => {
-  return axios.get<Result>("https://npmreg.azurewebsites.net/package", {
+  return await axios.get<Result>("https://npmreg.azurewebsites.net/package", {
     params: { name, version },
   });
 };
@@ -38,4 +38,16 @@ export const getFileDeps = async (file: ExtFile) => {
     flat: dependencies.flatMap((d) => d.data.flat),
     cycles: dependencies.flatMap((d) => d.data.cycles),
   };
+};
+
+// https://www.npmjs.com/search/suggestions?q=rea
+
+export const getSuggestions = async (text: string): Promise<SearchObj[]> => {
+  const data = await axios.get<SearchQuery>(
+    " https://registry.npmjs.com/-/v1/search",
+    {
+      params: { text },
+    }
+  );
+  return data.data.objects.slice(0, 15);
 };

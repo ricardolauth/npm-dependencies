@@ -13,6 +13,7 @@ import { Metadata, Package } from "../types";
 import { GraphStruct, convert } from "../utils";
 import InfoDialog from "../components/InfoDialog";
 import { GraphPageState } from "./App";
+import { useNavigate } from "react-router";
 
 interface Props {
   graphPageState: GraphPageState;
@@ -23,6 +24,7 @@ interface GraphInfo {
 }
 
 export const GraphPage = (props: Props) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [graph, setGraph] = useState<GraphStruct | undefined>(undefined);
   const [packages, setPackages] = useState<Metadata[]>();
@@ -37,11 +39,25 @@ export const GraphPage = (props: Props) => {
       if (props.graphPageState.type === "file") {
         result = await getFileDeps(props.graphPageState.file);
       } else {
-        const [name, version] = props.graphPageState.name.split("@");
+        let name: string;
+        let version: string | undefined;
+        const arr = props.graphPageState.name.split("@");
+        if (arr.length === 1) {
+          name = arr[0];
+        } else {
+          version = arr[arr.length - 1];
+          name = arr.slice(0, arr.length - 1).join("@");
+          console.log("name", name);
+          console.log("version", version);
+        }
+
         const response = await getPackage(name, version);
         result = response.data;
       }
-      if (!result) return;
+      if (!result || result.flat.length === 0) {
+        return navigate("/404");
+      }
+
       setGraph(convert(result.tree));
       setPackages(result.flat);
       setInfo({ cycles: result.cycles });

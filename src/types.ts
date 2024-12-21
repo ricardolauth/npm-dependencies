@@ -125,3 +125,22 @@ export interface Metadata {
   "dist-tags": DistTags;
   peerDependencies?: { [key: string]: string };
 }
+
+export interface SearchQuery {
+  objects: SearchObj[];
+  total: number;
+  time: Date;
+}
+
+export interface SearchObj {
+  downloads: Downloads;
+  dependents: number;
+  updated: Date;
+  searchScore: number;
+  package: Version;
+}
+
+export interface Downloads {
+  monthly: number;
+  weekly: number;
+}
