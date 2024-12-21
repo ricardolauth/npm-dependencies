@@ -1,4 +1,12 @@
-import { CircularProgress, Drawer, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  DialogTitle,
+  Drawer,
+  Fab,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import { GraphCanvas } from "reagraph";
 import { getFileDeps, getPackage } from "../api";
@@ -7,6 +15,8 @@ import { GraphStruct, convert } from "../utils";
 import InfoDialog from "../components/InfoDialog";
 import { GraphPageState } from "./App";
 import { useNavigate } from "react-router";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface Props {
   graphPageState: GraphPageState;
@@ -18,6 +28,7 @@ interface GraphInfo {
 
 export const GraphPage = (props: Props) => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [graph, setGraph] = useState<GraphStruct | undefined>(undefined);
   const [packages, setPackages] = useState<Metadata[]>();
@@ -99,22 +110,32 @@ export const GraphPage = (props: Props) => {
             }}
             variant="persistent"
             anchor="right"
-            open={true}
+            open={open}
           >
-            <Typography>
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-              nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-              erat, sed diam voluptua. At vero eos et accusam et justo duo
-              dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-              sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-              amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-              invidunt ut labore et dolore magna aliquyam erat, sed diam
-              voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-              Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
-              dolor sit amet.
-            </Typography>
+            <DialogTitle>
+              <Stack
+                flexDirection="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography variant="h5">Details</Typography>
+                <IconButton onClick={() => setOpen(false)}>
+                  <CloseIcon />
+                </IconButton>
+              </Stack>
+            </DialogTitle>
           </Drawer>
         </>
+      )}
+      {!open && (
+        <Fab
+          onClick={() => setOpen(true)}
+          color="primary"
+          aria-label="show details pane"
+          sx={{ position: "fixed", right: 50, bottom: 30 }}
+        >
+          <QueryStatsIcon />
+        </Fab>
       )}
       {selectedPackage && (
         <InfoDialog
