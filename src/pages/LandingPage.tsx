@@ -25,7 +25,7 @@ export const LandingPage = ({ set }: Props) => {
   const loadSuggestions = useDebouncedCallback(async (v: string) => {
     const suggestions = await getSuggestions(v);
     setOptions(suggestions);
-  }, 1000);
+  }, 300);
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && e.ctrlKey && text !== "") {
