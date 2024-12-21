@@ -50,7 +50,7 @@ export const LandingPage = ({ set }: Props) => {
       }}
     >
       <Stack gap={1} alignItems="center">
-        <Typography variant="h1">NPM Dependencies</Typography>
+        <Typography variant="h1">Dependalyzer</Typography>
         <div style={{ height: 20 }} />
         <Stack flexDirection="row" width={400} gap={1}>
           <Autocomplete
