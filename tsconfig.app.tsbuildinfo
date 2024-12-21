@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/infodialog.tsx","./src/maintainer.tsx","./src/main.tsx","./src/types.ts","./src/utils.ts","./src/vite-env.d.ts"],"version":"5.6.3"}
+{"root":["./src/api.ts","./src/main.tsx","./src/types.ts","./src/utils.ts","./src/vite-env.d.ts","./src/components/infodialog.tsx","./src/components/maintainer.tsx","./src/pages/app.tsx","./src/pages/graphpage.tsx","./src/pages/landingpage.tsx","./src/pages/notfoundpage.tsx"],"version":"5.6.3"}

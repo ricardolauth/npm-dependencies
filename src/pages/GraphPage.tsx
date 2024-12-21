@@ -1,15 +1,8 @@
-import { ExtFile } from "@files-ui/react";
-import {
-  Box,
-  CircularProgress,
-  Container,
-  Drawer,
-  Typography,
-} from "@mui/material";
+import { CircularProgress, Drawer, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { GraphCanvas } from "reagraph";
 import { getFileDeps, getPackage } from "../api";
-import { Metadata, Package } from "../types";
+import { Metadata } from "../types";
 import { GraphStruct, convert } from "../utils";
 import InfoDialog from "../components/InfoDialog";
 import { GraphPageState } from "./App";
@@ -28,7 +21,7 @@ export const GraphPage = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [graph, setGraph] = useState<GraphStruct | undefined>(undefined);
   const [packages, setPackages] = useState<Metadata[]>();
-  const [info, setInfo] = useState<GraphInfo>();
+  const [_, setInfo] = useState<GraphInfo>();
   const [selectedPackage, setSelectedPackage] = useState<Metadata>();
 
   useEffect(() => {

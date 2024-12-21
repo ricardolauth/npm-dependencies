@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { Ref, useState } from "react";
+import { useState } from "react";
 import { GraphPageState } from "./App";
 import { getSuggestions } from "../api";
 import { SearchObj } from "../types";

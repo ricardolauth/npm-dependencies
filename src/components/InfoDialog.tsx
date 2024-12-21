@@ -8,9 +8,7 @@ import {
   AvatarGroup,
   Stack,
 } from "@mui/material";
-import { Metadata, Package } from "../types";
-import MuiMarkdown from "mui-markdown";
-import { format } from "date-fns";
+import { Metadata } from "../types";
 import { Maintainer } from "./Maintainer";
 
 interface CustomDialogProps {
