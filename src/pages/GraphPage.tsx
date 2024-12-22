@@ -18,7 +18,7 @@ import { GraphPageState } from "./App";
 import { useNavigate } from "react-router";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import CloseIcon from "@mui/icons-material/Close";
-import { GraphAnalytics } from "../components/analytics/GraphAnalytics";
+import { Analytics } from "../components/analytics";
 
 interface Props {
   graphPageState: GraphPageState;
@@ -74,6 +74,7 @@ export const GraphPage = (props: Props) => {
     };
     load();
   }, [props.graphPageState]);
+
   return (
     <>
       {loading && (
@@ -128,7 +129,7 @@ export const GraphPage = (props: Props) => {
               </Stack>
             </DialogTitle>
             <DialogContent>
-              <GraphAnalytics
+              <Analytics
                 {...info}
                 select={(nodeOrEdge) => {
                   console.log(nodeOrEdge);

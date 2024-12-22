@@ -7,7 +7,7 @@ export interface AnalyticsProps extends GraphInfo {
   select: (nodeOrEdge: string[]) => void;
 }
 
-export const GraphAnalytics = (props: AnalyticsProps) => {
+export const Analytics = (props: AnalyticsProps) => {
   return (
     <>
       <DepracatedAnalytic {...props} />

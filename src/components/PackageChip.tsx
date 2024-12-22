@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { AnalyticsProps } from "./GraphAnalytics";
+import { AnalyticsProps } from "./analytics";
 
 export const PackageChip = ({
   graph,

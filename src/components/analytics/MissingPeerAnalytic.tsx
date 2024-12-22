@@ -1,10 +1,10 @@
 import { Divider, Stack, Typography } from "@mui/material";
-import { PackageChip } from "./PackageChip";
-import { AnalyticsProps } from "./GraphAnalytics";
-import { AccordionWrapper } from "./AccordionWrapper";
+import { PackageChip } from "../PackageChip";
+import { AnalyticsProps } from ".";
+import { AccordionWrapper } from "../AccordionWrapper";
 import { maxSatisfying } from "semver";
 import { packNameVerFromId } from "../../utils";
-import { Fragment, useMemo } from "react";
+import { useMemo } from "react";
 
 export const MissingPeerAnalytic = ({
   graph,

@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
-import { PackageChip } from "./PackageChip";
-import { AnalyticsProps } from "./GraphAnalytics";
-import { AccordionWrapper } from "./AccordionWrapper";
+import { PackageChip } from "../PackageChip";
+import { AnalyticsProps } from ".";
+import { AccordionWrapper } from "../AccordionWrapper";
 import { useMemo } from "react";
 
 export const DepracatedAnalytic = ({
