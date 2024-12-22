@@ -1,4 +1,4 @@
-import { Link, Stack, Typography } from "@mui/material";
+import { Link, Stack } from "@mui/material";
 import { PackageChip } from "../PackageChip";
 import { AnalyticsProps } from ".";
 import { AccordionWrapper } from "../AccordionWrapper";
