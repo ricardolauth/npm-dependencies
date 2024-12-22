@@ -16,35 +16,36 @@ export const CycleAnalytic = ({ result, select }: AnalyticsProps) => {
     select(result);
   };
 
+  const len = result?.cycles.length ?? 0;
+
   return (
-    <>
-      {result?.cycles && result.cycles.length > 0 && (
-        <AccordionWrapper title="Cyclic dependencies">
-          <Stack gap={2}>
-            {result.cycles.map((cycle) => (
-              <Paper
-                elevation={2}
-                onClick={() => handleShowCycle(cycle)}
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  p: 1,
-                  gap: 1,
-                  overflow: "hidden",
-                  flexWrap: "wrap",
-                  "&:hover": {
-                    boxShadow: 5,
-                  },
-                }}
-              >
-                {cycle.map((packageId) => (
-                  <PackageChip packageId={packageId} select={select} />
-                ))}
-              </Paper>
+    <AccordionWrapper
+      title={`Cyclic dependencies (${len})`}
+      defaultExpanded={len !== 0 && len < 10}
+    >
+      <Stack gap={2}>
+        {result?.cycles.map((cycle) => (
+          <Paper
+            elevation={2}
+            onClick={() => handleShowCycle(cycle)}
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              p: 1,
+              gap: 1,
+              overflow: "hidden",
+              flexWrap: "wrap",
+              "&:hover": {
+                boxShadow: 5,
+              },
+            }}
+          >
+            {cycle.map((packageId) => (
+              <PackageChip packageId={packageId} select={select} />
             ))}
-          </Stack>
-        </AccordionWrapper>
-      )}
-    </>
+          </Paper>
+        ))}
+      </Stack>
+    </AccordionWrapper>
   );
 };

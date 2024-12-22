@@ -8,11 +8,12 @@ import React from "react";
 interface Props {
   title: string;
   children: React.ReactNode;
+  defaultExpanded?: boolean;
 }
 
 export const AccordionWrapper = (props: Props) => {
   return (
-    <Accordion defaultExpanded>
+    <Accordion defaultExpanded={props.defaultExpanded}>
       <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
         <Typography>{props.title}</Typography>
       </AccordionSummary>

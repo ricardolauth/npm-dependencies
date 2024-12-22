@@ -53,24 +53,25 @@ export const MissingPeerAnalytic = ({
 
   const analytics = useMemo(() => missingPeerDependency(), [result, graph]);
 
+  const len = analytics.length;
+
   return (
-    <>
-      {analytics && analytics.length > 0 && (
-        <AccordionWrapper title="Missing Peer Dependency">
-          <Stack gap={1} p={1}>
-            {analytics?.map(([pack, missing], idx) => (
-              <Stack key={pack} pt={idx == 0 ? 0 : 1} gap={1}>
-                <PackageChip packageId={pack} graph={graph} select={select} />
-                <Typography>is missing:</Typography>
-                {missing.map((m) => (
-                  <Typography pl={2}>{m}</Typography>
-                ))}
-                {idx !== analytics.length - 1 && <Divider />}
-              </Stack>
+    <AccordionWrapper
+      title={`Missing peer dependency (${len})`}
+      defaultExpanded={len !== 0 && len < 10}
+    >
+      <Stack gap={1} p={1}>
+        {analytics?.map(([pack, missing], idx) => (
+          <Stack key={pack} pt={idx == 0 ? 0 : 1} gap={1}>
+            <PackageChip packageId={pack} graph={graph} select={select} />
+            <Typography>is missing:</Typography>
+            {missing.map((m) => (
+              <Typography pl={2}>{m}</Typography>
             ))}
+            {idx !== analytics.length - 1 && <Divider />}
           </Stack>
-        </AccordionWrapper>
-      )}
-    </>
+        ))}
+      </Stack>
+    </AccordionWrapper>
   );
 };

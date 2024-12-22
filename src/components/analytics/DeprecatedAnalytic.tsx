@@ -14,22 +14,29 @@ export const DepracatedAnalytic = ({
     [result]
   );
 
+  const len = analytics?.length ?? 0;
+
   return (
-    <>
-      {analytics && analytics.length > 0 && (
-        <AccordionWrapper title="Deprecated Dependency">
-          <Stack flexDirection="row" gap={1} p={1}>
-            {analytics?.map((pack) => (
-              <PackageChip
-                key={pack._id}
-                packageId={pack._id}
-                graph={graph}
-                select={select}
-              />
-            ))}
-          </Stack>
-        </AccordionWrapper>
-      )}
-    </>
+    <AccordionWrapper
+      title={`Deprecated dependency (${len})`}
+      defaultExpanded={len !== 0 && len < 10}
+    >
+      <Stack
+        flexDirection="row"
+        gap={1}
+        p={1}
+        flexWrap="wrap"
+        overflow="hidden"
+      >
+        {analytics?.map((pack) => (
+          <PackageChip
+            key={pack._id}
+            packageId={pack._id}
+            graph={graph}
+            select={select}
+          />
+        ))}
+      </Stack>
+    </AccordionWrapper>
   );
 };
