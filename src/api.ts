@@ -2,7 +2,7 @@ import { ExtFile } from "@files-ui/react";
 import { Metadata, SearchObj, SearchQuery, Version } from "./types";
 import axios from "axios";
 
-interface Result {
+export interface Result {
   tree: Record<string, object>;
   flat: Metadata[];
   cycles: string[][];
@@ -39,8 +39,6 @@ export const getFileDeps = async (file: ExtFile) => {
     cycles: dependencies.flatMap((d) => d.data.cycles),
   };
 };
-
-// https://www.npmjs.com/search/suggestions?q=rea
 
 export const getSuggestions = async (text: string): Promise<SearchObj[]> => {
   const data = await axios.get<SearchQuery>(

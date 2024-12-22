@@ -52,3 +52,16 @@ const toGraph = ({ tree, nodes, edges }: Task) => {
     }
   });
 };
+
+export const packNameVerFromId = (packId: string) => {
+  let name: string;
+  let version: string | undefined;
+  const arr = packId.split("@");
+  if (arr.length === 1) {
+    name = arr[0];
+  } else {
+    version = arr[arr.length - 1];
+    name = arr.slice(0, arr.length - 1).join("@");
+  }
+  return { name, version };
+};
