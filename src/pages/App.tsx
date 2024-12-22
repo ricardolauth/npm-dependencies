@@ -4,7 +4,6 @@ import { GraphPage } from "./GraphPage";
 import { ExtFile } from "@files-ui/react";
 import { useState } from "react";
 import NotFoundPage from "./NotFoundPage";
-
 type File = {
   type: "file";
   file: ExtFile;

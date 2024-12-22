@@ -3,6 +3,7 @@ import { CycleAnalytic } from "./CycleAnalytic";
 import { MissingPeerAnalytic } from "./MissingPeerAnalytic";
 import { DepracatedAnalytic } from "./DeprecatedAnalytic";
 import { SingleMaintainerAnalytic } from "./SingleMaintainerAnalytic";
+import { LicenseAnalytic } from "./LicenseAnalytic";
 
 export interface AnalyticsProps extends GraphInfo {
   select: (nodeOrEdge: string[]) => void;
@@ -15,6 +16,7 @@ export const Analytics = (props: AnalyticsProps) => {
       <CycleAnalytic {...props} />
       <MissingPeerAnalytic {...props} />
       <SingleMaintainerAnalytic {...props} />
+      <LicenseAnalytic {...props} />
     </>
   );
 };
