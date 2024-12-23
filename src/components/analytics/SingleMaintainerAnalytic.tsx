@@ -7,20 +7,19 @@ import { Metadata } from "../../types";
 import { Maintainer } from "../Maintainer";
 
 export const SingleMaintainerAnalytic = ({
-  graph,
-  result,
+  nodes,
+  edges,
   select,
 }: AnalyticsProps) => {
   const analytics = useMemo(() => {
-    const packages =
-      result?.flat.filter((f) => f.maintainers?.length === 1) ?? [];
+    const packages = nodes.filter((f) => f.maintainers?.length === 1) ?? [];
     const res: Record<string, Metadata[]> = packages.reduce(function (r, a) {
       r[a.maintainers![0].name] = r[a.maintainers![0].name] || [];
       r[a.maintainers![0].name].push(a);
       return r;
     }, Object.create(null));
     return res;
-  }, [result]);
+  }, [nodes]);
 
   const len = Object.keys(analytics).length;
 
@@ -38,7 +37,8 @@ export const SingleMaintainerAnalytic = ({
                 <PackageChip
                   key={pack._id}
                   packageId={pack._id}
-                  graph={graph}
+                  nodes={nodes}
+                  edges={edges}
                   select={select}
                 />
               ))}

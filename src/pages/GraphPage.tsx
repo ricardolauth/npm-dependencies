@@ -12,7 +12,7 @@ import { useState, useEffect } from "react";
 import { GraphCanvas } from "reagraph";
 import { getFileDeps, getPackage, Result } from "../api";
 import { Metadata } from "../types";
-import { GraphStruct, convert } from "../utils";
+import { toEdge, toNode } from "../utils";
 import InfoDialog from "../components/InfoDialog";
 import { GraphPageState } from "./App";
 import { useNavigate } from "react-router";
@@ -26,18 +26,15 @@ interface Props {
 
 export interface GraphInfo {
   result?: Result;
-  graph?: GraphStruct;
 }
 
 export const GraphPage = (props: Props) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [info, setInfo] = useState<GraphInfo>({});
+  const [graph, setGraph] = useState<Result>();
   const [dialogPackage, setDialogPackage] = useState<Metadata>();
   const [selection, setSelection] = useState<string[]>([]);
-
-  const { graph, result } = info;
 
   useEffect(() => {
     const load = async () => {
@@ -62,12 +59,11 @@ export const GraphPage = (props: Props) => {
         const response = await getPackage(name, version);
         res = response.data;
       }
-      if (!res || res.flat.length === 0) {
+      if (!res || res.nodes.length === 0) {
         return navigate("/404");
       }
 
-      const graph = convert(res.tree);
-      setInfo({ result: res, graph });
+      setGraph(res);
       const end = new Date();
       console.log((end.getTime() - start.getTime()) / 1000, "sec");
       setLoading(false);
@@ -93,13 +89,13 @@ export const GraphPage = (props: Props) => {
               nodeSeparation: Infinity,
             }}
             draggable
-            nodes={graph?.nodes ?? []}
-            edges={graph?.edges ?? []}
+            nodes={graph?.nodes.map((node) => toNode(node._id)) ?? []}
+            edges={graph?.edges.map((edge) => toEdge(edge)) ?? []}
             labelType="all"
             lassoType="node"
             selections={selection}
             onNodeClick={async (node) => {
-              const data = result?.flat?.find((p) => p._id === node.id);
+              const data = graph?.nodes?.find((p) => p._id === node.id);
               data && setDialogPackage(data);
             }}
           />
@@ -130,7 +126,7 @@ export const GraphPage = (props: Props) => {
             </DialogTitle>
             <DialogContent>
               <Analytics
-                {...info}
+                {...graph}
                 select={(nodeOrEdge) => {
                   console.log(nodeOrEdge);
                   setSelection(nodeOrEdge);
@@ -152,7 +148,7 @@ export const GraphPage = (props: Props) => {
       )}
       {dialogPackage && (
         <InfoDialog
-          open={!!dialogPackage && dialogPackage._id !== graph?.nodes[0].id}
+          open={!!dialogPackage && dialogPackage._id !== graph?.nodes[0]._id}
           onClose={() => setDialogPackage(undefined)}
           data={dialogPackage}
         />

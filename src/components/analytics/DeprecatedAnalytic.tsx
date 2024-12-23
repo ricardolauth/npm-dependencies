@@ -4,14 +4,11 @@ import { AnalyticsProps } from ".";
 import { AccordionWrapper } from "../AccordionWrapper";
 import { useMemo } from "react";
 
-export const DepracatedAnalytic = ({
-  graph,
-  result,
-  select,
-}: AnalyticsProps) => {
+export const DepracatedAnalytic = (props: AnalyticsProps) => {
+  const { nodes } = props;
   const analytics = useMemo(
-    () => result?.flat.filter((f) => f.deprecated ?? false),
-    [result]
+    () => nodes.filter((f) => f.deprecated ?? false),
+    [nodes]
   );
 
   const len = analytics?.length ?? 0;
@@ -29,12 +26,7 @@ export const DepracatedAnalytic = ({
         overflow="hidden"
       >
         {analytics?.map((pack) => (
-          <PackageChip
-            key={pack._id}
-            packageId={pack._id}
-            graph={graph}
-            select={select}
-          />
+          <PackageChip key={pack._id} packageId={pack._id} {...props} />
         ))}
       </Stack>
     </AccordionWrapper>

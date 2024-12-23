@@ -1,16 +1,19 @@
 import { ExtFile } from "@files-ui/react";
 import { Metadata, SearchObj, SearchQuery, Version } from "./types";
 import axios from "axios";
+import { distinctByKey } from "./utils";
 
 export interface Result {
-  tree: Record<string, object>;
-  flat: Metadata[];
-  cycles: string[][];
+  nodes: Metadata[];
+  edges: string[];
 }
 
 export const getPackage = async (name: string, version?: string) => {
   return await axios.get<Result>("https://npmreg.azurewebsites.net/package", {
-    params: { name, version },
+    params: {
+      name,
+      version,
+    },
   });
 };
 
@@ -26,17 +29,20 @@ export const getFileDeps = async (file: ExtFile) => {
       getPackage(name, version)
     )
   );
-  const depObj = Object.fromEntries(
-    dependencies.flatMap((d) => Object.entries(d.data.tree))
+
+  const rootId = `${json.name}@${json.version}`;
+
+  const nodes = distinctByKey(
+    dependencies.flatMap((d) => d.data.nodes),
+    "_id"
   );
-  console.log("depsOb", depObj);
-  let result: Record<string, object> = {};
-  result[json.name] = depObj;
+  const edges = Array.from(new Set(dependencies.flatMap((d) => d.data.edges)));
+  const topLevel = nodes.filter((n) => !edges.some((e) => e.endsWith(n._id)));
+  const topLevelEdges = topLevel.map((tl) => `${rootId}->${tl._id}`);
 
   return {
-    tree: result,
-    flat: dependencies.flatMap((d) => d.data.flat),
-    cycles: dependencies.flatMap((d) => d.data.cycles),
+    nodes: [...nodes, { _id: rootId } as unknown as Metadata],
+    edges: [...edges, ...topLevelEdges],
   };
 };
 
@@ -47,5 +53,5 @@ export const getSuggestions = async (text: string): Promise<SearchObj[]> => {
       params: { text },
     }
   );
-  return data.data.objects.slice(0, 15);
+  return data.data.objects;
 };

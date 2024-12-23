@@ -2,10 +2,10 @@ import { Chip } from "@mui/material";
 import { AnalyticsProps } from "./analytics";
 
 export const PackageChip = ({
-  graph,
+  edges,
   select,
   packageId,
-}: Pick<AnalyticsProps, "select" | "graph"> & { packageId: string }) => {
+}: AnalyticsProps & { packageId: string }) => {
   return (
     <Chip
       label={packageId}
@@ -14,9 +14,7 @@ export const PackageChip = ({
         e.stopPropagation();
         select([
           packageId,
-          ...(graph?.edges
-            .filter((e) => e.id.startsWith(packageId))
-            .map((e) => e.id) ?? []),
+          ...(edges.filter((e) => e.startsWith(packageId)) ?? []),
         ]);
       }}
       clickable

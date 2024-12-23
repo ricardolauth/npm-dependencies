@@ -7,8 +7,8 @@ import { packNameVerFromId } from "../../utils";
 import { useMemo } from "react";
 
 export const MissingPeerAnalytic = ({
-  graph,
-  result,
+  nodes,
+  edges,
   select,
 }: AnalyticsProps) => {
   const isVersionAvailable = (versionString: string, versions: string[]) => {
@@ -20,18 +20,18 @@ export const MissingPeerAnalytic = ({
 
   const missingPeerDependency = () => {
     const missingDeps = new Map<string, string[]>();
-    const depsWithPeer = result?.flat.filter((dep) => !!dep.peerDependencies);
+    const depsWithPeer = nodes.filter((dep) => !!dep.peerDependencies);
     for (const pack of depsWithPeer ?? []) {
       const parents =
-        graph?.edges
-          .filter((p) => p.id.endsWith(pack._id))
-          .map((p) => p.id.split("->")[0]) ?? [];
+        edges
+          .filter((p) => p.endsWith(pack._id))
+          .map((p) => p.split("->")[0]) ?? [];
 
       for (const parent of parents) {
         const siblingsOfPeerPack =
-          graph?.edges
-            .filter((c) => c.id.startsWith(parent))
-            .map((c) => c.id.split("->")[1])
+          edges
+            .filter((c) => c.startsWith(parent))
+            .map((c) => c.split("->")[1])
             .map((c) => packNameVerFromId(c)) ?? [];
 
         for (const [name, range] of Object.entries(
@@ -51,7 +51,7 @@ export const MissingPeerAnalytic = ({
     return [...missingDeps.entries()];
   };
 
-  const analytics = useMemo(() => missingPeerDependency(), [result, graph]);
+  const analytics = useMemo(() => missingPeerDependency(), [nodes, edges]);
 
   const len = analytics.length;
 
@@ -63,7 +63,12 @@ export const MissingPeerAnalytic = ({
       <Stack gap={1} p={1}>
         {analytics?.map(([pack, missing], idx) => (
           <Stack key={pack} pt={idx == 0 ? 0 : 1} gap={1}>
-            <PackageChip packageId={pack} graph={graph} select={select} />
+            <PackageChip
+              packageId={pack}
+              nodes={nodes}
+              edges={edges}
+              select={select}
+            />
             <Typography>is missing:</Typography>
             {missing.map((m) => (
               <Typography pl={2}>{m}</Typography>

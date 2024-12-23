@@ -6,16 +6,16 @@ import { useMemo } from "react";
 import { Metadata } from "../../types";
 import { LicenseTags } from "../LicenseTags";
 
-export const LicenseAnalytic = ({ graph, result, select }: AnalyticsProps) => {
+export const LicenseAnalytic = ({ nodes, edges, select }: AnalyticsProps) => {
   const analytics = useMemo(() => {
-    const packages = result?.flat.flatMap((f) => (f.license ? [f] : [])) ?? [];
+    const packages = nodes.flatMap((f) => (f.license ? [f] : [])) ?? [];
     const res: Record<string, Metadata[]> = packages.reduce(function (r, a) {
       r[a.license!] = r[a.license!] || [];
       r[a.license!].push(a);
       return r;
     }, Object.create(null));
     return res;
-  }, [result]);
+  }, [nodes]);
 
   const len = Object.keys(analytics).length;
 
@@ -46,7 +46,8 @@ export const LicenseAnalytic = ({ graph, result, select }: AnalyticsProps) => {
                 <PackageChip
                   key={pack._id}
                   packageId={pack._id}
-                  graph={graph}
+                  edges={edges}
+                  nodes={nodes}
                   select={select}
                 />
               ))}
